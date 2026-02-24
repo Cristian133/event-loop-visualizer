@@ -1,0 +1,88 @@
+<div class="layout-container">
+  <header class="app-header">
+    <h1>JS Event Loop Visualizer</h1>
+    <div class="controls">
+      <button
+        class="btn btn-secondary"
+        (click)="simulator.reset()"
+        title="Reiniciar"
+      >
+        <span class="icon">🔄</span>
+      </button>
+      <button
+        class="btn btn-secondary"
+        (click)="simulator.prevStep()"
+        [disabled]="simulator.currentStepIndex() === 0"
+        title="Paso Anterior"
+      >
+        <span class="icon">⏪</span>
+      </button>
+
+      @if (!simulator.isPlaying()) {
+        <button
+          class="btn btn-play"
+          (click)="simulator.togglePlay()"
+          [disabled]="simulator.isFinished()"
+        >
+          <span class="icon">▶️</span> Reproducir
+        </button>
+      } @else {
+        <button class="btn btn-pause" (click)="simulator.togglePlay()">
+          <span class="icon">⏸️</span> Pausar
+        </button>
+      }
+
+      <button
+        class="btn btn-primary"
+        (click)="simulator.nextStep()"
+        [disabled]="simulator.isFinished()"
+      >
+        Paso Siguiente <span class="icon">⏩</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="explanation-bar">
+    <p>
+      💬 <strong>Explicación del paso:</strong> {{ simulator.explanation() }}
+    </p>
+  </div>
+
+  <main class="grid-layout">
+    <div class="code-area">
+      <app-code-view
+        [currentExercise]="simulator.currentExercise()"
+        [allExercises]="simulator.exercises()"
+        [activeLine]="simulator.activeLine()"
+        (exerciseSelected)="onExerciseChange($event)"
+      >
+      </app-code-view>
+    </div>
+
+    <div class="stack-area">
+      <app-call-stack [items]="simulator.callStack()"></app-call-stack>
+    </div>
+
+    <div class="api-area">
+      <app-web-api [items]="simulator.webApi()"></app-web-api>
+    </div>
+
+    <div class="micro-area">
+      <app-task-queue
+        title="Microtask Queue (Promesas)"
+        [items]="simulator.microtaskQueue()"
+      ></app-task-queue>
+    </div>
+
+    <div class="macro-area">
+      <app-task-queue
+        title="Macrotask Queue (setTimeout)"
+        [items]="simulator.macrotaskQueue()"
+      ></app-task-queue>
+    </div>
+
+    <div class="console-area">
+      <app-console [items]="simulator.consoleLogs()"></app-console>
+    </div>
+  </main>
+</div>
