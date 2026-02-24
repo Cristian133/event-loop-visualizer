@@ -154,7 +154,7 @@ export class CodeViewComponent {
   exerciseSelected = output<string>();
 
   codeLines = computed(() => {
-    return this.currentExercise().code.split('\\n');
+    return this.currentExercise().code.split('\n');
   });
 
   onSelect(event: Event) {
