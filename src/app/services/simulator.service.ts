@@ -10,7 +10,7 @@ export class SimulatorService {
     public currentExercise = signal<Exercise>(EXERCISES[0]);
     public currentStepIndex = signal<number>(0);
     public isPlaying = signal<boolean>(false);
-    private playInterval: any;
+    private playInterval: ReturnType<typeof setInterval> | null = null;
 
     constructor() {
         effect(() => {

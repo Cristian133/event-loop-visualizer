@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { SimulatorService } from './services/simulator.service';
 import { CodeViewComponent } from './components/code-view/code-view.component';
 import { CallStackComponent } from './components/call-stack/call-stack.component';
@@ -9,6 +9,7 @@ import { ConsoleComponent } from './components/console/console.component';
 @Component({
   selector: 'app-root',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CodeViewComponent,
     CallStackComponent,
