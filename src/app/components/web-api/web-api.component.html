@@ -1,0 +1,10 @@
+<div class="panel">
+  <h3 class="panel-title">Web APIs</h3>
+  <div class="api-container">
+    @for (item of items(); track $index) {
+      <div class="api-item"><span class="icon">🕸️</span> {{ item }}</div>
+    } @empty {
+      <div class="empty-text">Vacío</div>
+    }
+  </div>
+</div>

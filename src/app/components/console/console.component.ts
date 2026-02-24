@@ -4,57 +4,8 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
   selector: 'app-console',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="panel">
-      <h3 class="panel-title">Console</h3>
-      <div class="console-output">
-        @for (log of items(); track $index) {
-          <div class="log-line">> {{ log }}</div>
-        }
-      </div>
-    </div>
-  `,
-  styles: `
-    .panel {
-      background: #080a0f;
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 1.25rem;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-    .panel-title {
-      margin-top: 0;
-      color: var(--success);
-      font-size: 1rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--glass-border);
-      padding-bottom: 0.75rem;
-      margin-bottom: 1.25rem;
-    }
-    .console-output {
-      flex: 1;
-      overflow-y: auto;
-      font-family: 'Fira Code', 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--success);
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-    .log-line {
-      margin-bottom: 0.1rem;
-      animation: fadeIn 0.2s ease-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  `
+  templateUrl: './console.component.html',
+  styleUrl: './console.component.scss'
 })
 export class ConsoleComponent {
   items = input.required<string[]>();

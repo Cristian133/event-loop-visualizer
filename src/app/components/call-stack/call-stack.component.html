@@ -1,0 +1,10 @@
+<div class="panel">
+  <h3 class="panel-title">Call Stack</h3>
+  <div class="stack-container">
+    @for (item of items().slice().reverse(); track $index) {
+      <div class="stack-item">{{ item }}</div>
+    } @empty {
+      <div class="empty-text">Vacío</div>
+    }
+  </div>
+</div>

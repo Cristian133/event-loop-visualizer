@@ -1,0 +1,23 @@
+<div class="panel">
+  <div class="header">
+    <h3 class="panel-title">Ejemplo JS</h3>
+    <select class="exercise-select" (change)="onSelect($event)">
+      @for (ex of allExercises(); track ex.id) {
+        <option [value]="ex.id" [selected]="ex.id === currentExercise().id">
+          {{ ex.name }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <p class="description">{{ currentExercise().description }}</p>
+
+  <div class="code-container">
+    @for (line of codeLines(); track $index) {
+      <div class="code-line" [class.active]="$index === activeLine()">
+        <span class="line-number">{{ $index + 1 }}</span>
+        <span class="line-text">{{ line }}</span>
+      </div>
+    }
+  </div>
+</div>
