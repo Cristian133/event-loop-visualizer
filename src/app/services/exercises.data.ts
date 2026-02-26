@@ -186,5 +186,28 @@ console.log('3. Fin');`,
             { callStack: ['miAsync (reanudación)', 'console.log("4. Después await")'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async', '3. Fin'], activeLine: 3, explanation: 'Se ejecuta lo que faltaba de la función.' },
             { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async', '3. Fin', '4. Después await'], activeLine: null, explanation: 'Fin. Se observa el flujo: 1 -> 2 -> 3 -> 4.' }
         ]
+    },
+    {
+        id: 'dom-events',
+        name: '8. Eventos del DOM',
+        description: 'La interacción con el DOM a través de eventos es asíncrona. El navegador vigila el evento y encola el callback en la Macrotask Queue cuando ocurre.',
+        code: `const btn = document.querySelector('button');
+btn.addEventListener('click', () => {
+  console.log('Botón clickeado');
+});
+console.log('Script finalizado');`,
+        steps: [
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: null, explanation: 'Estado inicial. El DOM está listo en el navegador.' },
+            { callStack: ["const btn = document.querySelector('button')"], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: 0, explanation: 'JavaScript solicita un elemento al DOM (Web API).' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: 0, explanation: 'El elemento es retornado y guardado en la variable "btn".' },
+            { callStack: ["btn.addEventListener('click', ...)"], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: 1, explanation: 'Se registra un escucha de eventos.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: [], activeLine: 1, explanation: 'El listener se delega a la Web API. JavaScript no se bloquea esperando el clic.' },
+            { callStack: ["console.log('Script finalizado')"], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: [], activeLine: 4, explanation: 'El script principal continúa.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: ['Script finalizado'], activeLine: 4, explanation: 'Script finalizado. El Call Stack está vacío.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: ['callback click'], webApi: ['Click Listener'], console: ['Script finalizado'], activeLine: null, explanation: '¡Usuario hace clic! La Web API detecta el evento y encola el callback en la Macrotask Queue.' },
+            { callStack: ['callback click'], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: ['Script finalizado'], activeLine: 1, explanation: 'El Event Loop mueve el callback al Call Stack.' },
+            { callStack: ['callback click', "console.log('Botón clickeado')"], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: ['Script finalizado'], activeLine: 2, explanation: 'Se ejecuta el código dentro del callback.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: ['Script finalizado', 'Botón clickeado'], activeLine: null, explanation: 'Fin. El listener sigue en la Web API esperando más clics.' }
+        ]
     }
 ];
