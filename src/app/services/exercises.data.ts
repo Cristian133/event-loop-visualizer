@@ -209,5 +209,30 @@ console.log('Script finalizado');`,
             { callStack: ['callback click', "console.log('Botón clickeado')"], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: ['Script finalizado'], activeLine: 2, explanation: 'Se ejecuta el código dentro del callback.' },
             { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Click Listener'], console: ['Script finalizado', 'Botón clickeado'], activeLine: null, explanation: 'Fin. El listener sigue en la Web API esperando más clics.' }
         ]
+    },
+    {
+        id: 'rxjs-timer',
+        name: '9. RxJS: timer(0)',
+        description: 'En RxJS, muchos operadores son asíncronos por defecto. timer(0) usa el scheduler asíncrono, lo que significa que delega la ejecución a la Macrotask Queue.',
+        code: `import { timer } from 'rxjs';
+
+console.log('Inicio');
+timer(0).subscribe(() => {
+  console.log('RxJS Timer');
+});
+console.log('Fin');`,
+        steps: [
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: null, explanation: 'Estado inicial. RxJS listo para emitir.' },
+            { callStack: ["console.log('Inicio')"], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: 2, explanation: 'Ejecución síncrona inicial.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['Inicio'], activeLine: 2, explanation: 'Log impreso.' },
+            { callStack: ["timer(0).subscribe(...)"], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['Inicio'], activeLine: 3, explanation: 'Nos suscribimos al observable. timer(0) inicia internamente un setTimeout.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['Inicio'], activeLine: 3, explanation: 'El motor de RxJS delega la espera a la Web API del navegador.' },
+            { callStack: ["console.log('Fin')"], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['Inicio'], activeLine: 6, explanation: 'El script principal continúa.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['Inicio', 'Fin'], activeLine: 6, explanation: 'Log impreso. El stack está vacío.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: ['RxJS Callback'], webApi: [], console: ['Inicio', 'Fin'], activeLine: 4, explanation: 'El timer de la Web API termina y coloca la notificación en la Macrotask Queue.' },
+            { callStack: ['RxJS Callback'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['Inicio', 'Fin'], activeLine: 4, explanation: 'El Event Loop mueve el callback de la suscripción al Call Stack.' },
+            { callStack: ['RxJS Callback', "console.log('RxJS Timer')"], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['Inicio', 'Fin'], activeLine: 4, explanation: 'Se ejecuta el código dentro del subscribe.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['Inicio', 'Fin', 'RxJS Timer'], activeLine: null, explanation: 'Fin del flujo de RxJS. Se demuestra que timer(0) es asíncrono.' }
+        ]
     }
 ];
