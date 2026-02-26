@@ -122,5 +122,69 @@ setTimeout(() => console.log('Macro'), 0);`,
             { callStack: ['Macro callback', 'console.log("Macro")'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['Micro 1', 'Micro 2'], activeLine: 6, explanation: 'Ejecutamos el log del timeout.' },
             { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['Micro 1', 'Micro 2', 'Macro'], activeLine: null, explanation: 'Fin. Observa cómo las microtareas retrasaron la macrotarea.' },
         ]
+    },
+    {
+        id: 'setTimeout-zero',
+        name: '6. Utilidad de setTimeout 0',
+        description: 'A veces usamos setTimeout(0) para "diferir" una ejecución. Esto permite que el Call Stack se vacíe por completo (incluyendo funciones anidadas) antes de ejecutar el callback, dando tiempo al navegador para tareas como renderizar la UI.',
+        code: `function interna() {
+  console.log('2. Pila profunda');
+}
+function tarea() {
+  interna();
+}
+console.log('1. Inicio');
+setTimeout(() => console.log('4. Diferido'), 0);
+tarea();
+console.log('3. Fin');`,
+        steps: [
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: null, explanation: 'Estado inicial.' },
+            { callStack: ['console.log("1. Inicio")'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: 6, explanation: 'Comenzamos con un log síncrono.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio'], activeLine: 6, explanation: 'Log impreso.' },
+            { callStack: ['setTimeout(...)'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio'], activeLine: 7, explanation: 'Registramos un timer. Aunque sea de 0ms, es asíncrono.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio'], activeLine: 7, explanation: 'Delega el callback a la Web API.' },
+            { callStack: ['tarea()'], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio'], activeLine: 8, explanation: 'Llamamos a una función síncrona "tarea".' },
+            { callStack: ['tarea()', 'interna()'], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio'], activeLine: 4, explanation: 'tarea() llama a interna(). La pila (Call Stack) empieza a crecer.' },
+            { callStack: ['tarea()', 'interna()', 'console.log("2. Pila profunda")'], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio'], activeLine: 1, explanation: 'interna() ejecuta un log. Notar cómo el callback diferido sigue esperando su turno.' },
+            { callStack: ['tarea()', 'interna()'], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio', '2. Pila profunda'], activeLine: 1, explanation: 'Log finalizado.' },
+            { callStack: ['tarea()'], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio', '2. Pila profunda'], activeLine: 2, explanation: 'interna() termina y sale del stack.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio', '2. Pila profunda'], activeLine: 5, explanation: 'tarea() termina y el stack vuelve a estar (momentáneamente) vacío.' },
+            { callStack: ['console.log("3. Fin")'], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio', '2. Pila profunda'], activeLine: 9, explanation: 'Última instrucción síncrona del script principal.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: ['Timer (0ms)'], console: ['1. Inicio', '2. Pila profunda', '3. Fin'], activeLine: 9, explanation: 'Log finalizado.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: ['callback'], webApi: [], console: ['1. Inicio', '2. Pila profunda', '3. Fin'], activeLine: null, explanation: 'El timer de la Web API ya terminó y puso el callback en la cola de Macrotareas.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: ['callback'], webApi: [], console: ['1. Inicio', '2. Pila profunda', '3. Fin'], activeLine: null, explanation: 'PUNTO CLAVE: El Call Stack está vacío. Si hubiera microtareas o necesidad de renderizar, ocurriría AHORA.' },
+            { callStack: ['callback'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Pila profunda', '3. Fin'], activeLine: 7, explanation: 'El Event Loop mueve por fin el callback al Call Stack.' },
+            { callStack: ['callback', 'console.log("4. Diferido")'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Pila profunda', '3. Fin'], activeLine: 7, explanation: 'Se ejecuta el contenido del setTimeout.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Pila profunda', '3. Fin', '4. Diferido'], activeLine: null, explanation: 'Fin. Se demuestra que el setTimeout(0) siempre espera a que TODO el código síncrono (y sus funciones) termine.' }
+        ]
+    },
+    {
+        id: 'async-await',
+        name: '7. Async / Await',
+        description: 'Las funciones async se ejecutan de forma síncrona hasta encontrar el primer "await". En ese punto, el resto de la función se pausa y se envía a la Microtask Queue.',
+        code: `async function miAsync() {
+  console.log('2. Dentro async');
+  await Promise.resolve();
+  console.log('4. Después await');
+}
+
+console.log('1. Inicio');
+miAsync();
+console.log('3. Fin');`,
+        steps: [
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: null, explanation: 'Estado inicial.' },
+            { callStack: ['console.log("1. Inicio")'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: [], activeLine: 6, explanation: 'Ejecución síncrona inicial.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio'], activeLine: 6, explanation: 'Log impreso.' },
+            { callStack: ['miAsync()'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio'], activeLine: 7, explanation: 'Llamamos a la función asíncrona. Entra al Call Stack normalmente.' },
+            { callStack: ['miAsync()', 'console.log("2. Dentro async")'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio'], activeLine: 1, explanation: 'IMPORTANTE: El código dentro de una función async se ejecuta SÍNCRONAMENTE hasta el primer await.' },
+            { callStack: ['miAsync()'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async'], activeLine: 1, explanation: 'Log impreso.' },
+            { callStack: ['miAsync()', 'await Promise.resolve()'], microtaskQueue: ['miAsync (reanudación)'], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async'], activeLine: 2, explanation: 'Al llegar al await, la función se pausa y el resto del código se encola como una Microtarea.' },
+            { callStack: [], microtaskQueue: ['miAsync (reanudación)'], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async'], activeLine: 7, explanation: 'miAsync() sale del stack. El control vuelve al hilo principal.' },
+            { callStack: ['console.log("3. Fin")'], microtaskQueue: ['miAsync (reanudación)'], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async'], activeLine: 8, explanation: 'Se continúa con el siguiente bloque síncrono.' },
+            { callStack: [], microtaskQueue: ['miAsync (reanudación)'], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async', '3. Fin'], activeLine: 8, explanation: 'El script principal ha terminado.' },
+            { callStack: ['miAsync (reanudación)'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async', '3. Fin'], activeLine: 2, explanation: 'El Event Loop vacía la Microtask Queue y reanuda la función async.' },
+            { callStack: ['miAsync (reanudación)', 'console.log("4. Después await")'], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async', '3. Fin'], activeLine: 3, explanation: 'Se ejecuta lo que faltaba de la función.' },
+            { callStack: [], microtaskQueue: [], macrotaskQueue: [], webApi: [], console: ['1. Inicio', '2. Dentro async', '3. Fin', '4. Después await'], activeLine: null, explanation: 'Fin. Se observa el flujo: 1 -> 2 -> 3 -> 4.' }
+        ]
     }
 ];
